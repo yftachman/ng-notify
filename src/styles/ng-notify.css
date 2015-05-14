@@ -2,7 +2,8 @@
 .ngn {
   color: #FFF;
   cursor: default;
-  display: none;
+    /* removed this temporarily  so we could see the notification becasue we dont use the fadeLib*/
+  /*display: none;*/
   font-size: 1.3em;
   left: 0;
   opacity: 1;

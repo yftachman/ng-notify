@@ -16,12 +16,25 @@
      var module = angular.module('ngNotify', []);
 
      module.run(['$templateCache', function($templateCache) {
-        $templateCache.put('templates/ng-notify/ngNotify.html',
-            '<div class="ngn" ng-class="ngNotify.notifyClass">' +
-                '<span class="ngn-dismiss" ng-click="dismiss()">&times;</span>' +
-                '<span ng-bind="ngNotify.notifyMessage"></span>' +
-            '</div>'
-        );
+//        $templateCache.put('templates/ng-notify/ngNotify-notification.html',
+//                '<div class="" ng-class="ngNotify.notifyClass">' +
+//                    '<span class="ngn-dismiss" ng-click="dismiss()">&times;</span>' +
+//                    '<span ng-bind="notification.notifyMessage"></span>' +
+//                '</div>'
+//        );
+ /* making a template for the notifications container*/
+         $templateCache.put('templates/ng-notify/ngNotify.html',
+             /* we have a notification object, and each notification holds data on its appearence */
+             '<div ng-repeat="notification in notifications">' +
+                 /* $index * 75 is for having an offset */
+                 '<div class="ngn" ng-class="notification.notifyClass" style="bottom:{{$index * 75}}px">' +
+
+                    /* we could pass the notification it self (or index) to the dismiss function */
+                     '<span class="ngn-dismiss" ng-click="dismiss()">&times;</span>' +
+                     '<span ng-bind="notification.notifyMessage"></span>' +
+                 '</div>' +
+             '</div>'
+         );
      }]);
 
      module.provider('ngNotify', function() {
@@ -70,9 +83,10 @@
                 // Template and scope...
 
                 var notifyScope = $rootScope.$new();
-                var tpl = $compile($templateCache.get('templates/ng-notify/ngNotify.html'))(notifyScope);
+                notifyScope.notifications = [];
+                notifyScope.notificationsContainer = $compile($templateCache.get('templates/ng-notify/ngNotify.html'))(notifyScope);
+                $document.find('body').append(notifyScope.notificationsContainer);
 
-                $document.find('body').append(tpl);
 
                 // Private methods...
 
@@ -236,7 +250,7 @@
                  *
                  * @type {Object}
                  */
-                var el = fadeLib(tpl);
+//                var el = fadeLib(tpl);
 
                 /**
                  * Our primary object containing all public API methods and allows for all our functionality to be invoked.
@@ -301,13 +315,23 @@
                             notifyMessage: message
                         };
 
-                        el.fadeIn(200, function() {
-                            if (!sticky) {
-                                notifyTimeout = $timeout(function() {
-                                    notifyScope.dismiss();
-                                }, duration);
-                            }
-                        });
+//                        var tpl = $compile($templateCache.get('templates/ng-notify/ngNotify.html'))(notifyScope);
+
+
+                        var notification = {
+                            notifyClass: notifyClass,
+                            notifyMessage: message
+                        };
+                        notifyScope.notifications.push(notification);
+
+//                        var el = fadeLib(tpl);
+//                        el.fadeIn(200, function() {
+//                            if (!sticky) {
+//                                notifyTimeout = $timeout(function() {
+//                                    //notifyScope.dismiss(notifications.length - 1);
+//                                }, duration);
+//                            }
+//                        });
                     },
 
                     /**
